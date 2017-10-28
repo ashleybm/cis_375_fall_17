@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "82684902222",
+    "firebase_url": "https://cliqus-87b50.firebaseio.com",
+    "project_id": "cliqus-87b50",
+    "storage_bucket": "cliqus-87b50.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:82684902222:android:e28744ca0f977e40",
+        "android_client_info": {
+          "package_name": "edu.umich.cliqus"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "82684902222-amr23eh4ulhrql4ltp5kcua8s5amoae5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.umich.cliqus",
+            "certificate_hash": "e692cc78a25e71396c46933f01aad8eb5c7b5765"
+          }
+        },
+        {
+          "client_id": "82684902222-ffvs4pv6hjm4tttgg8lg74d54rl6gmqg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCH6qReFntfJEEe4LQN-JegtYb25onrA-M"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "82684902222-ffvs4pv6hjm4tttgg8lg74d54rl6gmqg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
