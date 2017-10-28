@@ -1,4 +1,4 @@
-package edu.umich.tinderforfriends;
+package edu.umich.cliqus;
 
 import org.junit.Test;
 

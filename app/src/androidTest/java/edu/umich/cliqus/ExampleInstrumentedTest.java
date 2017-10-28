@@ -1,4 +1,4 @@
-package edu.umich.tinderforfriends;
+package edu.umich.cliqus;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("edu.umich.tinderforfriends", appContext.getPackageName());
+        assertEquals("edu.umich.cliqus", appContext.getPackageName());
     }
 }
