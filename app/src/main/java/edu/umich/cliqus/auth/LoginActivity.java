@@ -30,7 +30,7 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.input_email) EditText _emailText;
     @BindView(R.id.input_password) EditText _passwordText;
     @BindView(R.id.btn_login) Button _loginButton;
-    @BindView(R.id.link_signup) TextView _signupLink;
+    @BindView(R.id.btn_signup) TextView _signupLink;
 
     private FirebaseAuth mAuth;
 

@@ -24,9 +24,12 @@ import edu.umich.cliqus.R;
 public class SignupActivity extends AppCompatActivity {
     private static final String TAG = "SignupActivity";
 
-    @BindView(R.id.input_name) EditText _nameText;
+    @BindView(R.id.input_first_name) EditText _firstNameText;
+    @BindView(R.id.input_last_name) EditText _lastNameText;
     @BindView(R.id.input_email) EditText _emailText;
     @BindView(R.id.input_password) EditText _passwordText;
+    @BindView(R.id.input_gender) EditText _genderText;
+   /// @BindView(R.id.input_dob) EditText _dobtext;
     @BindView(R.id.btn_signup) Button _signupButton;
     @BindView(R.id.link_login) TextView _loginLink;
 
@@ -71,7 +74,9 @@ public class SignupActivity extends AppCompatActivity {
         progressDialog.setMessage("Creating Account...");
         progressDialog.show();
 
-        String name = _nameText.getText().toString();
+        String firstName = _firstNameText.getText().toString();
+        String lastName = _lastNameText.getText().toString();
+        String gender = _genderText.getText().toString();
         String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
 
@@ -85,6 +90,7 @@ public class SignupActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "Account Successfully Created, please log in");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            
                             onSignupSuccess();
                         } else {
                             // If sign in fails, display a message to the user.
@@ -114,15 +120,32 @@ public class SignupActivity extends AppCompatActivity {
     public boolean validate() {
         boolean valid = true;
 
-        String name = _nameText.getText().toString();
+        String firstName = _firstNameText.getText().toString();
+        String lastName = _lastNameText.getText().toString();
         String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
+        String gender = _genderText.getText().toString();
+        //String dob;
 
-        if (name.isEmpty() || name.length() < 3) {
-            _nameText.setError("at least 3 characters");
+        if (firstName.isEmpty() || firstName.length() < 3) {
+            _firstNameText.setError("at least 3 characters");
             valid = false;
         } else {
-            _nameText.setError(null);
+            _firstNameText.setError(null);
+        }
+
+        if (lastName.isEmpty() || lastName.length() < 3) {
+            _lastNameText.setError("at least 3 characters");
+            valid = false;
+        } else {
+            _lastNameText.setError(null);
+        }
+
+        if (lastName.isEmpty()) {
+            _genderText.setError("enter your gender");
+            valid = false;
+        } else {
+            _genderText.setError(null);
         }
 
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
