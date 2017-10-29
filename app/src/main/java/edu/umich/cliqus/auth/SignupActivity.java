@@ -15,11 +15,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import butterknife.ButterKnife;
 import butterknife.BindView;
 import edu.umich.cliqus.R;
+import edu.umich.cliqus.UserInformation;
 
 public class SignupActivity extends AppCompatActivity {
     private static final String TAG = "SignupActivity";
@@ -74,11 +78,14 @@ public class SignupActivity extends AppCompatActivity {
         progressDialog.setMessage("Creating Account...");
         progressDialog.show();
 
-        String firstName = _firstNameText.getText().toString();
-        String lastName = _lastNameText.getText().toString();
-        String gender = _genderText.getText().toString();
-        String email = _emailText.getText().toString();
-        String password = _passwordText.getText().toString();
+        final String firstName = _firstNameText.getText().toString();
+        final String lastName = _lastNameText.getText().toString();
+        final String gender = _genderText.getText().toString();
+        final String email = _emailText.getText().toString();
+        final String password = _passwordText.getText().toString();
+        final String age = "";
+        final String address = "";
+        final String phone = "";
 
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -90,7 +97,14 @@ public class SignupActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "Account Successfully Created, please log in");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            
+                            FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
+                            DatabaseReference myRef;
+                            FirebaseAuth.AuthStateListener mAuthListener;
+                            myRef = mFirebaseDatabase.getReference();
+                            String userID = user.getUid();
+                            myRef.child("users").child(userID).setValue(
+                                    new UserInformation(firstName, lastName,
+                                            age, gender, address, phone));
                             onSignupSuccess();
                         } else {
                             // If sign in fails, display a message to the user.
@@ -98,8 +112,17 @@ public class SignupActivity extends AppCompatActivity {
                             Toast.makeText(SignupActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                             onSignupFailed();
-                        }
+                            if (task.getException() instanceof FirebaseAuthUserCollisionException)
+                                Toast.makeText(SignupActivity.this,
+                                        "User with this account already exists",
+                                        Toast.LENGTH_SHORT).show();
+                            else
+                                // If sign in fails, display a message to the user.
+                                Toast.makeText(SignupActivity.this, "Authentication failed.",
+                                        Toast.LENGTH_SHORT).show();
 
+                            onSignupSuccess();
+                        }
                     }
                 });
     }

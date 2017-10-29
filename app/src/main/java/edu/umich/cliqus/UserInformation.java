@@ -1,10 +1,36 @@
 package edu.umich.cliqus;
 
+import java.io.Serializable;
+
 /**
  * Created by somcom3x on 10/28/17.
  */
 
-public class UserInformation {
+public class UserInformation implements Serializable{
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getAge() {
+        return age;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
     private String firstName;
     private String lastName;
     private String age;
@@ -24,4 +50,5 @@ public class UserInformation {
         this.address = address;
         this.phone = phone;
     }
+
 }
