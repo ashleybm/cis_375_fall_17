@@ -13,6 +13,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -24,7 +31,8 @@ import butterknife.BindView;
 import edu.umich.cliqus.NavDrawerActivity;
 import edu.umich.cliqus.R;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity
+        implements GoogleApiClient.OnConnectionFailedListener{
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
 
@@ -33,8 +41,10 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.btn_login) Button _loginButton;
     @BindView(R.id.btn_signup) TextView _signupLink;
     @BindView(R.id.checkbox_stay_logged_in) CheckBox _stayLoggedIn;
-
+    @BindView(R.id.google_sign_in_button) SignInButton _googleSignInButton;
     private FirebaseAuth mAuth;
+    private GoogleApiClient mGoogleApiClient;
+    private static final int RC_SIGN_IN = 9001;
     boolean stayLoggedIn = false;
 
     @Override
@@ -60,6 +70,23 @@ public class LoginActivity extends AppCompatActivity {
                 startActivityForResult(intent, REQUEST_SIGNUP);
             }
         });
+
+        _googleSignInButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                loginWithGoogle();
+            }
+        });
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(
+                GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
         mAuth = FirebaseAuth.getInstance();
 
         _stayLoggedIn.setOnClickListener( new View.OnClickListener() {
@@ -104,7 +131,6 @@ public class LoginActivity extends AppCompatActivity {
                         Log.d(TAG, "signInWithEmail:success");
                         FirebaseUser user = mAuth.getCurrentUser();
                         if(stayLoggedIn) {
-                            Log.w(TAG, "STAY LOGGED IM!?!?!?!");
                             SaveSharedPreference.setUserName(LoginActivity.this, email);
                         }
                         onLoginSuccess();
@@ -125,6 +151,34 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    public void loginWithGoogle() {
+        Intent intent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(intent, RC_SIGN_IN);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            handleSignInResult(result);
+        }
+    }
+
+    private void handleSignInResult(GoogleSignInResult result) {
+        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
+        if (result.isSuccess()) {
+            // Signed in successfully, show authenticated UI.
+            GoogleSignInAccount acct = result.getSignInAccount();
+            Log.w(TAG, "Google Sign In succesful");
+            onLoginSuccess();
+        } else {
+            // Signed out, show unauthenticated UI.
+            onLoginFailed();
+        }
+    }
 
     @Override
     public void onBackPressed() {
@@ -144,6 +198,14 @@ public class LoginActivity extends AppCompatActivity {
         Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
 
         _loginButton.setEnabled(true);
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        // An unresolvable error has occurred and Google APIs (including Sign-In) will not
+        // be available.
+        Log.d(TAG, "onConnectionFailed:" + connectionResult);
+        onLoginFailed();
     }
 
     public void signOut() {
