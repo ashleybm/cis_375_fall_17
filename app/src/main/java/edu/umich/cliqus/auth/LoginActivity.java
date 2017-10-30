@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,8 +32,10 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.input_password) EditText _passwordText;
     @BindView(R.id.btn_login) Button _loginButton;
     @BindView(R.id.btn_signup) TextView _signupLink;
+    @BindView(R.id.checkbox_stay_logged_in) CheckBox _stayLoggedIn;
 
     private FirebaseAuth mAuth;
+    boolean stayLoggedIn = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,6 +62,15 @@ public class LoginActivity extends AppCompatActivity {
         });
         mAuth = FirebaseAuth.getInstance();
 
+        _stayLoggedIn.setOnClickListener( new View.OnClickListener() {
+            public void onClick(View v) {
+                stayLoggedIn = !stayLoggedIn;
+            }
+        });
+
+        if(SaveSharedPreference.getUserName(LoginActivity.this).length() != 0) {
+            onLoginSuccess();
+        }
     }
 
     public void login() {
@@ -77,8 +89,8 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.setMessage("Authenticating...");
         progressDialog.show();
 
-        String email = _emailText.getText().toString();
-        String password = _passwordText.getText().toString();
+        final String email = _emailText.getText().toString();
+        final String password = _passwordText.getText().toString();
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
@@ -91,9 +103,11 @@ public class LoginActivity extends AppCompatActivity {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d(TAG, "signInWithEmail:success");
                         FirebaseUser user = mAuth.getCurrentUser();
+                        if(stayLoggedIn) {
+                            Log.w(TAG, "STAY LOGGED IM!?!?!?!");
+                            SaveSharedPreference.setUserName(LoginActivity.this, email);
+                        }
                         onLoginSuccess();
-
-
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w(TAG, "signInWithEmail:failure", task.getException());
@@ -133,7 +147,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void signOut() {
+
         mAuth.signOut();
+        if(SaveSharedPreference.getUserName(LoginActivity.this).length() != 0) {
+            SaveSharedPreference.signout(LoginActivity.this);
+        }
     }
 
     public boolean validate() {
