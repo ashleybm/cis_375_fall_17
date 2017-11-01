@@ -3,10 +3,10 @@
 <item>
     <color android:color="@color/colorPrimary"/>
 </item>
-<item>
+    <item>
     <bitmap
         android:src="@mipmap/ic_launcher"
         android:tileMode="disabled"
-        android:gravity="center"/>
+        android:gravity="center" />
 </item>
 </layer-list>
