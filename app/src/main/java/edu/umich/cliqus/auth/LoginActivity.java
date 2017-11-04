@@ -3,6 +3,7 @@ package edu.umich.cliqus.auth;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -22,18 +23,23 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 import butterknife.ButterKnife;
 import butterknife.BindView;
 import edu.umich.cliqus.NavDrawerActivity;
 import edu.umich.cliqus.R;
+import edu.umich.cliqus.profile.Profile;
+import edu.umich.cliqus.profile.RequestProfileDataActivity;
 
 public class LoginActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener{
-    private static final String TAG = "LoginActivity";
+    private static final String TAG = "CliqUs";
     private static final int REQUEST_SIGNUP = 0;
 
     @BindView(R.id.input_email) EditText _emailText;
@@ -66,8 +72,7 @@ public class LoginActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 // Start the Signup activity
-                Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
-                startActivityForResult(intent, REQUEST_SIGNUP);
+                signUp();
             }
         });
 
@@ -79,8 +84,10 @@ public class LoginActivity extends AppCompatActivity
             }
         });
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(
-                GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
@@ -118,8 +125,6 @@ public class LoginActivity extends AppCompatActivity
 
         final String email = _emailText.getText().toString();
         final String password = _passwordText.getText().toString();
-
-        FirebaseUser currentUser = mAuth.getCurrentUser();
 
         mAuth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -172,13 +177,32 @@ public class LoginActivity extends AppCompatActivity
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
-            Log.w(TAG, "Google Sign In succesful");
-            onLoginSuccess();
+
+            Log.w(TAG, acct.getId().toString());
+
+            mAuth = FirebaseAuth.getInstance();
+            AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+            mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if(task.isSuccessful()) {
+                        Log.w(TAG, "Google Sign In succesful");
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        onLoginSuccess();
+
+                    } else {
+                        Log.w(TAG, "Firebase Credential LOGIN FAILED!");
+                        onLoginFailed();
+                    }
+
+                }
+            });
         } else {
             // Signed out, show unauthenticated UI.
             onLoginFailed();
         }
     }
+
 
     @Override
     public void onBackPressed() {
@@ -188,9 +212,8 @@ public class LoginActivity extends AppCompatActivity
 
     public void onLoginSuccess() {
         _loginButton.setEnabled(true);
+
         //move in to app
-        Intent intent = new Intent(getApplicationContext(), NavDrawerActivity.class);
-        startActivity(intent);
         finish();
     }
 
@@ -216,6 +239,64 @@ public class LoginActivity extends AppCompatActivity
         }
     }
 
+    public void signUp() {
+        Log.d(TAG, "Signup");
+
+        if (!validate()) {
+            onSignupFailed();
+            return;
+        }
+
+        final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
+                R.style.AppTheme_NoActionBar);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Creating Account...");
+        progressDialog.show();
+
+        mAuth.createUserWithEmailAndPassword(_emailText.getText().toString().trim(),
+                _passwordText.getText().toString().trim())
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        progressDialog.dismiss();
+
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.w(TAG, "NAME OF USER " + mAuth.getCurrentUser().getDisplayName());
+                            onSignupSuccess();
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                            onSignupFailed();
+
+                            if (task.getException() instanceof FirebaseAuthUserCollisionException)
+                                Toast.makeText(LoginActivity.this,
+                                        "User with this account already exists",
+                                        Toast.LENGTH_SHORT).show();
+                            else
+                                // If sign in fails, display a message to the user.
+                                Toast.makeText(LoginActivity.this, "Authentication failed.",
+                                        Toast.LENGTH_SHORT).show();
+                            onSignupFailed();
+                        }
+                    }
+                });
+    }
+
+
+    public void onSignupSuccess() {
+        setResult(RESULT_OK, null);
+        finish();
+    }
+
+    public void onSignupFailed() {
+        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+
+        setResult(RESULT_CANCELED, null);
+    }
+
+
+
     public boolean validate() {
         boolean valid = true;
 
@@ -238,4 +319,5 @@ public class LoginActivity extends AppCompatActivity
 
         return valid;
     }
+
 }

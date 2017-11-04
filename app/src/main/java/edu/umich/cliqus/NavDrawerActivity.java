@@ -1,8 +1,11 @@
 package edu.umich.cliqus;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,35 +15,103 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import edu.umich.cliqus.auth.LoginActivity;
+import edu.umich.cliqus.profile.Profile;
+import edu.umich.cliqus.profile.RequestProfileDataActivity;
+
+import static edu.umich.cliqus.R.id.nameNavBarTextView;
 
 public class NavDrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+        private static final String TAG = "CliqUs";
+
+    private FirebaseAuth mAuth;
+    private FirebaseDatabase mFirebaseDatabase;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
+
+    private String uid;
+    private DatabaseReference userRef;
+
+    private Profile profile;
+
+    @BindView(R.id.HelloWorldTextView) TextView helloView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nav_drawer);
+        ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
+        
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mAuth = FirebaseAuth.getInstance();
+
+
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        userRef = mFirebaseDatabase.getReference();
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        if(user == null) {
+            Log.w(TAG, "No user found, sign in");
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intent);
+        } else {
+
+            uid = user.getUid();
+            Log.w(TAG, "USER ID " + uid);
+
+
+            userRef.child("users").child(uid).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    profile = dataSnapshot.getValue(Profile.class);
+
+
+                    Log.w(TAG, "Signed up!");
+                    Log.w("CliqUs", profile.getFirstName());
+                    Log.w("CliqUs", profile.getLastName());
+                    Log.w("CliqUs", profile.getGender());
+                    Log.w("CliqUs", profile.getEmail());
+                    Log.w("CliqUs", profile.getDob());
+                    Log.w("CliqUs", profile.getPhone());
+                    helloView.setText(profile.getEmail() + "; " + profile.getFirstName() +
+                            " " + profile.getLastName());
+                }
+
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.w(TAG, "cancelled? " + databaseError.toString());
+                }
+            });
+        }
+    }
+
 
     @Override
     public void onBackPressed() {
