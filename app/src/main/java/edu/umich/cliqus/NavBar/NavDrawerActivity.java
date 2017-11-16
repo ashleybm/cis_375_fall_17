@@ -32,8 +32,6 @@ import edu.umich.cliqus.auth.LoginActivity;
 import edu.umich.cliqus.profile.Profile;
 import edu.umich.cliqus.profile.RequestProfileDataActivity;
 
-import static edu.umich.cliqus.R.id.nameNavBarTextView;
-
 public class NavDrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
         private static final String TAG = "CliqUs";
