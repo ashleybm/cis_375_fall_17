@@ -21,6 +21,12 @@
     </string>
     <string name="stay_logged_in">Check the box to stay logged in</string>
 
+    <string name="profile_nav_entry">Profile</string>
+    <string name="events_nav_entry">Events</string>
+    <string name="questionnaire_nav_entry">Questionnaire</string>
+    <string name="settings_nav_entry">Settings</string>
+
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="pick_time">Date Of Birth</string>
