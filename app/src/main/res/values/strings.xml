@@ -21,6 +21,19 @@
     </string>
     <string name="stay_logged_in">Check the box to stay logged in</string>
 
+    <string name="event_finder_nav_header">Event Finder</string>
+    <string name="profile_nav_entry">Profile</string>
+    <string name="events_nav_entry">Events</string>
+    <string name="questionnaire_nav_entry">Questionnaire</string>
+
+    <string name="suggestions_nav_header">Suggestions</string>
+    <string name="submit_event_nav_entry">Submit Event</string>
+    <string name="submit_bug_nav_entry">Submit Bug</string>
+
+    <string name="app_options_nav_entry">CliqUs Settings</string>
+    <string name="settings_nav_entry">Settings</string>
+    <string name="sign_out_nav_entry">Sign Out</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="pick_time">Date Of Birth</string>
