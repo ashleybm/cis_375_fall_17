@@ -93,17 +93,22 @@ public class NavDrawerActivity extends AppCompatActivity
                     profile = dataSnapshot.getValue(Profile.class);
 
 
-                    Log.w(TAG, "Signed up!");
-                    Log.w("CliqUs", profile.getFirstName());
-                    Log.w("CliqUs", profile.getLastName());
-                    Log.w("CliqUs", profile.getGender());
-                    Log.w("CliqUs", profile.getEmail());
-                    Log.w("CliqUs", profile.getDob());
-                    Log.w("CliqUs", profile.getPhone());
-                    helloView.setText(profile.getEmail() + "; " + profile.getFirstName() +
-                            " " + profile.getLastName());
+                    Log.w(TAG, "Data pulled!");
+                    if(profile == null) {
+                        Intent intent = new Intent(NavDrawerActivity.this,
+                                RequestProfileDataActivity.class);
+                        startActivity(intent);
+                    } else {
+                        Log.w("CliqUs", profile.getFirstName());
+                        Log.w("CliqUs", profile.getLastName());
+                        Log.w("CliqUs", profile.getGender());
+                        Log.w("CliqUs", profile.getEmail());
+                        Log.w("CliqUs", profile.getDob());
+                        Log.w("CliqUs", profile.getPhone());
+                        helloView.setText(profile.getEmail() + "; " + profile.getFirstName() +
+                                " " + profile.getLastName());
+                    }
                 }
-
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {

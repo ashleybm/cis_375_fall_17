@@ -31,8 +31,6 @@ public class RequestProfileDataActivity extends AppCompatActivity {
     @BindView(R.id.input_first_name)
     EditText _firstNameText;
     @BindView(R.id.input_last_name) EditText _lastNameText;
-    @BindView(R.id.input_email) EditText _emailText;
-    @BindView(R.id.input_password) EditText _passwordText;
     @BindView(R.id.input_gender) EditText _genderText;
     /// @BindView(R.id.input_dob) EditText _dobtext;
     @BindView(R.id.btn_save_profile) Button _saveDataButton;
@@ -41,8 +39,6 @@ public class RequestProfileDataActivity extends AppCompatActivity {
 
     private String firstName;
     private String lastName;
-    private String email;
-    private String password;
     private String gender;
     private String dob;
     private String phone;
@@ -69,8 +65,6 @@ public class RequestProfileDataActivity extends AppCompatActivity {
 
         firstName = _firstNameText.getText().toString();
         lastName = _lastNameText.getText().toString();
-        email = _emailText.getText().toString();
-        password = _passwordText.getText().toString();
         gender = _genderText.getText().toString();
 
         if (firstName.isEmpty() || firstName.length() < 3) {
@@ -94,20 +88,6 @@ public class RequestProfileDataActivity extends AppCompatActivity {
             _genderText.setError(null);
         }
 
-        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            _emailText.setError("enter a valid email address");
-            valid = false;
-        } else {
-            _emailText.setError(null);
-        }
-
-        if (password.isEmpty() || password.length() < 5 || password.length() > 16) {
-            _passwordText.setError("between 5 and 16 alphanumeric characters");
-            valid = false;
-        } else {
-            _passwordText.setError(null);
-        }
-
         return valid;
     }
 
@@ -115,13 +95,14 @@ public class RequestProfileDataActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         if(validate()) {
-            Profile profile = new Profile(firstName, lastName, gender, " ", email, " ");
-
             FirebaseUser user = mAuth.getCurrentUser();
             FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
             DatabaseReference myRef;
             FirebaseAuth.AuthStateListener mAuthListener;
             myRef = mFirebaseDatabase.getReference();
+
+            Profile profile = new Profile(firstName, lastName, gender, " ",
+                    user.getEmail(), " ");
 
             if(user != null) {
                 String userID = user.getUid();
@@ -130,13 +111,11 @@ public class RequestProfileDataActivity extends AppCompatActivity {
 
                 Log.w("CliqUs", firstName);
                 Log.w("CliqUs", lastName);
-                Log.w("CliqUs", gender);
-                Log.w("CliqUs", email);
 
                 myRef.child("users").child(userID).setValue(profile);
                 this.finish();
             } else
-                Log.w(TAG, "KILL ME NOW");
+                Log.w(TAG, "Contact support");
         }
     }
 
