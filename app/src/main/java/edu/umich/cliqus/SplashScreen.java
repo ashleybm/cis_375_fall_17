@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import edu.umich.cliqus.auth.LoginActivity;
+import edu.umich.cliqus.NavBar.NavDrawerActivity;
 
 public class SplashScreen extends AppCompatActivity {
 

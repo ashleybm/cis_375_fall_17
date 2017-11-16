@@ -3,7 +3,6 @@ package edu.umich.cliqus.auth;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -32,10 +31,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 import butterknife.ButterKnife;
 import butterknife.BindView;
-import edu.umich.cliqus.NavDrawerActivity;
 import edu.umich.cliqus.R;
-import edu.umich.cliqus.profile.Profile;
-import edu.umich.cliqus.profile.RequestProfileDataActivity;
 
 public class LoginActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener{
@@ -46,12 +42,10 @@ public class LoginActivity extends AppCompatActivity
     @BindView(R.id.input_password) EditText _passwordText;
     @BindView(R.id.btn_login) Button _loginButton;
     @BindView(R.id.btn_signup) TextView _signupLink;
-    @BindView(R.id.checkbox_stay_logged_in) CheckBox _stayLoggedIn;
     @BindView(R.id.google_sign_in_button) SignInButton _googleSignInButton;
     private FirebaseAuth mAuth;
     private GoogleApiClient mGoogleApiClient;
     private static final int RC_SIGN_IN = 9001;
-    boolean stayLoggedIn = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -96,17 +90,12 @@ public class LoginActivity extends AppCompatActivity
 
         mAuth = FirebaseAuth.getInstance();
 
-        _stayLoggedIn.setOnClickListener( new View.OnClickListener() {
-            public void onClick(View v) {
-                stayLoggedIn = !stayLoggedIn;
-            }
-        });
 
         if(SaveSharedPreference.getUserName(LoginActivity.this).length() != 0) {
             onLoginSuccess();
         }
     }
-
+//
     public void login() {
         Log.d(TAG, "Login");
 
@@ -135,9 +124,6 @@ public class LoginActivity extends AppCompatActivity
                         // Sign in success, update UI with the signed-in user's information
                         Log.d(TAG, "signInWithEmail:success");
                         FirebaseUser user = mAuth.getCurrentUser();
-                        if(stayLoggedIn) {
-                            SaveSharedPreference.setUserName(LoginActivity.this, email);
-                        }
                         onLoginSuccess();
                     } else {
                         // If sign in fails, display a message to the user.
@@ -231,13 +217,6 @@ public class LoginActivity extends AppCompatActivity
         onLoginFailed();
     }
 
-    public void signOut() {
-
-        mAuth.signOut();
-        if(SaveSharedPreference.getUserName(LoginActivity.this).length() != 0) {
-            SaveSharedPreference.signout(LoginActivity.this);
-        }
-    }
 
     public void signUp() {
         Log.d(TAG, "Signup");

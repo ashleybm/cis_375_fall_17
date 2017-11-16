@@ -1,4 +1,4 @@
-package edu.umich.cliqus;
+package edu.umich.cliqus.NavBar;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,6 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import edu.umich.cliqus.R;
 import edu.umich.cliqus.auth.LoginActivity;
 import edu.umich.cliqus.profile.Profile;
 import edu.umich.cliqus.profile.RequestProfileDataActivity;
@@ -163,6 +164,10 @@ public class NavDrawerActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_send) {
 
+        } else if (id == R.id.log_out) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            mAuth.signOut();
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
