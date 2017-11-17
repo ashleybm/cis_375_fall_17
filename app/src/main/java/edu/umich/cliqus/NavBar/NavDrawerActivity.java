@@ -1,6 +1,8 @@
 package edu.umich.cliqus.NavBar;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
@@ -165,7 +167,33 @@ public class NavDrawerActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_submit_event) {
 
+            try{
+                Intent intent = new Intent (Intent.ACTION_VIEW , Uri.parse("mailto:" +
+                        "support@cliq.us"));
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Feature Request From " + profile.getFirstName() +
+                    " " + profile.getLastName());
+                intent.putExtra(Intent.EXTRA_TEXT, "Date: \n" +
+                        "Event Type (Birthday, Movie, etc): \n" +
+                        "Link to Event: ");
+                startActivity(intent);
+            }catch(ActivityNotFoundException e){
+                Log.w(TAG, "Activity Exception: "+ e );
+            }
+
         } else if (id == R.id.nav_submit_bug) {
+
+            try{
+                Intent intent = new Intent (Intent.ACTION_VIEW , Uri.parse("mailto:" +
+                        "support@cliq.us"));
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Bug Report From " + profile.getFirstName() +
+                        " " + profile.getLastName());
+                intent.putExtra(Intent.EXTRA_TEXT, "Date: \n" +
+                        "Problem Experienced: \n" +
+                        "Steps to Recreate: ");
+                startActivity(intent);
+            }catch(ActivityNotFoundException e){
+                Log.w(TAG, "Activity Exception: "+ e );
+            }
 
         } else if (id == R.id.nav_signout) {
             Intent intent = new Intent(this, LoginActivity.class);
