@@ -1,14 +1,12 @@
 package edu.umich.cliqus.NavBar;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.SystemClock;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -32,6 +30,7 @@ import butterknife.ButterKnife;
 import edu.umich.cliqus.R;
 import edu.umich.cliqus.auth.LoginActivity;
 import edu.umich.cliqus.profile.Profile;
+import edu.umich.cliqus.profile.ProfileFragment;
 import edu.umich.cliqus.profile.RequestProfileDataActivity;
 
 public class NavDrawerActivity extends AppCompatActivity
@@ -47,7 +46,6 @@ public class NavDrawerActivity extends AppCompatActivity
 
     private Profile profile;
 
-    @BindView(R.id.HelloWorldTextView) TextView helloView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +63,11 @@ public class NavDrawerActivity extends AppCompatActivity
         
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.frame_container, new ProfileFragment()).commit();
+
     }
 
     @Override
@@ -105,8 +108,6 @@ public class NavDrawerActivity extends AppCompatActivity
                         Log.w("CliqUs", profile.getEmail());
                         Log.w("CliqUs", profile.getDob());
                         Log.w("CliqUs", profile.getPhone());
-                        helloView.setText(profile.getEmail() + "; " + profile.getFirstName() +
-                                " " + profile.getLastName());
                     }
                 }
 
@@ -156,9 +157,13 @@ public class NavDrawerActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        Fragment fragment = null;
 
         if (id == R.id.nav_profile) {
-            // Handle the camera action
+            //Intent intent = new Intent(NavDrawerActivity.this, ProfileActivity.class);
+           // startActivity(intent);
+
+            fragment = new ProfileFragment();
         } else if (id == R.id.nav_events) {
 
         } else if (id == R.id.nav_questionnaire) {
@@ -200,6 +205,14 @@ public class NavDrawerActivity extends AppCompatActivity
             mAuth.signOut();
             startActivity(intent);
         }
+
+        if(fragment != null) {
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.frame_container, fragment).commit();
+        }
+
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_in_home);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
