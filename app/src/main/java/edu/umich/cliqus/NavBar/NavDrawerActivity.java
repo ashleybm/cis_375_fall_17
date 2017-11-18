@@ -25,8 +25,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import edu.umich.cliqus.R;
 import edu.umich.cliqus.auth.LoginActivity;
 import edu.umich.cliqus.profile.Profile;
@@ -51,7 +49,6 @@ public class NavDrawerActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nav_drawer);
-        ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -63,10 +60,6 @@ public class NavDrawerActivity extends AppCompatActivity
         
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.frame_container, new ProfileFragment()).commit();
 
     }
 
@@ -95,7 +88,6 @@ public class NavDrawerActivity extends AppCompatActivity
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     profile = dataSnapshot.getValue(Profile.class);
 
-
                     Log.w(TAG, "Data pulled!");
                     if(profile == null) {
                         Intent intent = new Intent(NavDrawerActivity.this,
@@ -109,6 +101,17 @@ public class NavDrawerActivity extends AppCompatActivity
                         Log.w("CliqUs", profile.getDob());
                         Log.w("CliqUs", profile.getPhone());
                     }
+
+                    Fragment fragment = new ProfileFragment();
+
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("profiledata", profile);
+                    fragment.setArguments(bundle);
+
+                    FragmentManager fragmentManager = getFragmentManager();
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.frame_container, fragment).commit();
+
                 }
 
                 @Override
@@ -162,8 +165,12 @@ public class NavDrawerActivity extends AppCompatActivity
         if (id == R.id.nav_profile) {
             //Intent intent = new Intent(NavDrawerActivity.this, ProfileActivity.class);
            // startActivity(intent);
-
             fragment = new ProfileFragment();
+
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("profiledata", profile);
+            fragment.setArguments(bundle);
+
         } else if (id == R.id.nav_events) {
 
         } else if (id == R.id.nav_questionnaire) {

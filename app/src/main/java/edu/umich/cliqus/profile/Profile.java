@@ -5,11 +5,13 @@ import android.util.Log;
 
 import com.google.firebase.database.DatabaseReference;
 
+import java.io.Serializable;
+
 /**
  * Created by somcom3x on 11/3/17.
  */
 
-public class Profile {
+public class Profile implements Serializable{
 
     private String firstName;
     private String lastName;
@@ -17,6 +19,8 @@ public class Profile {
     private String dob;
     private String email;
     private String phone;
+    private boolean coverPhotoSet;
+    private boolean profilePhotoSet;
 
     public Profile() {
         this.firstName = null;
@@ -25,6 +29,8 @@ public class Profile {
         this.dob = null;
         this.email = null;
         this.phone = null;
+        coverPhotoSet = false;
+        profilePhotoSet = false;
     }
 
     public Profile(String firstName, String lastName, String gender, String dob, String email, String phone) {
@@ -83,6 +89,22 @@ public class Profile {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public boolean isCoverPhotoSet() {
+        return coverPhotoSet;
+    }
+
+    public void setCoverPhotoSet(boolean coverPhotoSet) {
+        this.coverPhotoSet = coverPhotoSet;
+    }
+
+    public boolean isProfilePhotoSet() {
+        return profilePhotoSet;
+    }
+
+    public void setProfilePhotoSet(boolean profilePhotoSet) {
+        this.profilePhotoSet = profilePhotoSet;
     }
 
     public boolean checkData() {

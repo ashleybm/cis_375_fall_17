@@ -21,6 +21,7 @@
     </string>
     <string name="stay_logged_in">Check the box to stay logged in</string>
 
+    <!-- Nav Drawer -->
     <string name="event_finder_nav_header">Event Finder</string>
     <string name="profile_nav_entry">Profile</string>
     <string name="events_nav_entry">Events</string>
@@ -42,5 +43,7 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="past_events">Past Events</string>
+    <string name="attending_upcoming_events">Attending Upcoming Events</string>
 
 </resources>
