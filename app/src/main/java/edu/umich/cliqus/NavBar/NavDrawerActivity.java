@@ -27,6 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import edu.umich.cliqus.R;
 import edu.umich.cliqus.auth.LoginActivity;
+import edu.umich.cliqus.event.EventFragment;
 import edu.umich.cliqus.profile.Profile;
 import edu.umich.cliqus.profile.ProfileFragment;
 import edu.umich.cliqus.profile.RequestProfileDataActivity;
@@ -172,6 +173,11 @@ public class NavDrawerActivity extends AppCompatActivity
             fragment.setArguments(bundle);
 
         } else if (id == R.id.nav_events) {
+            fragment = new EventFragment();
+
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("profiledata", profile);
+            fragment.setArguments(bundle);
 
         } else if (id == R.id.nav_questionnaire) {
 

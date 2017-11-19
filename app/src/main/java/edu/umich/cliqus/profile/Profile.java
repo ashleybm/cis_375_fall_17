@@ -21,6 +21,7 @@ public class Profile implements Serializable{
     private String phone;
     private boolean coverPhotoSet;
     private boolean profilePhotoSet;
+    private String desiredEventTags;
 
     public Profile() {
         this.firstName = null;
@@ -31,15 +32,18 @@ public class Profile implements Serializable{
         this.phone = null;
         coverPhotoSet = false;
         profilePhotoSet = false;
+        desiredEventTags = "";
     }
 
-    public Profile(String firstName, String lastName, String gender, String dob, String email, String phone) {
+    public Profile(String firstName, String lastName, String gender, String dob, String email,
+                   String phone, String desiredEventTags) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
         this.dob = dob;
         this.email = email;
         this.phone = phone;
+        this.desiredEventTags = desiredEventTags;
     }
 
 
@@ -103,8 +107,15 @@ public class Profile implements Serializable{
         return profilePhotoSet;
     }
 
+    public String getDesiredEventTags() { return desiredEventTags; }
+
     public void setProfilePhotoSet(boolean profilePhotoSet) {
         this.profilePhotoSet = profilePhotoSet;
+    }
+
+
+    public void addDesiredEventTag(String tag) {
+        desiredEventTags += tag + ",";
     }
 
     public boolean checkData() {
