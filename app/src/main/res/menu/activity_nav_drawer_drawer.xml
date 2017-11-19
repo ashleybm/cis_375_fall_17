@@ -5,15 +5,15 @@
         <menu>
             <item
                 android:id="@+id/nav_profile"
-                android:icon="@drawable/ic_menu_camera"
+                android:icon="@drawable/ic_menu_profile"
                 android:title="@string/profile_nav_entry" />
             <item
                 android:id="@+id/nav_events"
-                android:icon="@drawable/ic_menu_gallery"
+                android:icon="@drawable/ic_menu_events"
                 android:title="@string/events_nav_entry" />
             <item
                 android:id="@+id/nav_questionnaire"
-                android:icon="@drawable/ic_menu_slideshow"
+                android:icon="@drawable/ic_menu_questionnaire"
                 android:title="@string/questionnaire_nav_entry" />
         </menu>
     </item>
@@ -22,11 +22,11 @@
         <menu>
             <item
                 android:id="@+id/nav_submit_event"
-                android:icon="@drawable/ic_menu_share"
+                android:icon="@drawable/ic_menu_submitevent"
                 android:title="@string/submit_event_nav_entry" />
             <item
                 android:id="@+id/nav_submit_bug"
-                android:icon="@drawable/ic_menu_send"
+                android:icon="@drawable/ic_menu_bug"
                 android:title="@string/submit_bug_nav_entry" />
         </menu>
     </item>
