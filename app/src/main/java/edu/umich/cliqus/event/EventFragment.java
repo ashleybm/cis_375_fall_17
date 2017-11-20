@@ -3,8 +3,11 @@ package edu.umich.cliqus.event;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,13 +18,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,7 +116,6 @@ public class EventFragment extends Fragment {
         rv = (RecyclerView) rootView.findViewById(R.id.cardList);
 
         populateEvents();
-        checkIfImagesAreLoaded();
         final LinearLayoutManager llm = new LinearLayoutManager(context);
         rv.setLayoutManager(llm);
 
@@ -130,10 +140,39 @@ public class EventFragment extends Fragment {
 
                     for (DataSnapshot snapshot : ds.getChildren()) {
                         events.add(snapshot.getValue(Event.class));
-                        events.get(events.size() - 1).fetchImage();
-
-
                         Log.w(TAG, snapshot.getValue().toString());
+
+                        StorageReference riversRef = FirebaseStorage.getInstance().getReference()
+                                .child("event_image")
+                                .child(events.get(events.size() - 1).getImageUID() + ".jpg");
+                        Log.w(TAG, "Fetching image " +
+                                events.get(events.size() - 1).getImageUID());
+
+                        try {
+                            final int eventNum = events.size() - 1;
+                            final File localFile = File
+                                    .createTempFile("images", "jpg");
+                            riversRef.getFile(localFile)
+                                    .addOnSuccessListener(
+                                            new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                                        @Override
+                                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                            Bitmap image = BitmapFactory.decodeFile(
+                                                    localFile.getAbsolutePath());
+                                            events.get(eventNum).setImageEvent(image);
+                                            adapter.notifyItemChanged(eventNum);
+                                            Log.w(TAG, "imageUID " + eventNum + " is ready");
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception exception) {
+                                    Log.w("cliqus", "event image" +
+                                            eventNum + " download failed");
+                                }
+                            });
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
                 setRecyclerAdapter();
@@ -144,7 +183,6 @@ public class EventFragment extends Fragment {
                 Log.w(TAG,"The read failed: " + firebaseError.getMessage());
             }
         });
-
     }
 
     public void getUserPreferences() {
@@ -161,30 +199,5 @@ public class EventFragment extends Fragment {
         touchHelper.attachToRecyclerView(rv);
     }
 
-    void checkIfImagesAreLoaded() {
-        boolean loaded = true;
 
-        for(int i = 0; i < events.size(); i++) {
-            if(events.get(i).isImageReady() != true);
-                loaded = false;
-        }
-
-        if(loaded) {
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    //Do something after 100ms
-                    checkIfImagesAreLoaded();
-                    Log.w(TAG, "LOOPing until done");
-                }
-            }, 1000);
-        } else {
-            if(adapter == null)
-                setRecyclerAdapter();
-            else
-                adapter.notifyDataSetChanged();
-            Log.w(TAG, "displaying data");
-        }
-    }
 }

@@ -85,35 +85,7 @@ public class Event implements Serializable {
 
     public boolean isImageReady() { return imageReady; }
 
-    public void fetchImage() {
-
-        if(imageUID != null) {
-            StorageReference riversRef = FirebaseStorage.getInstance().getReference()
-                    .child("event_image")
-                    .child(imageUID + ".jpg");
-            Log.w(TAG, "Fetching image " + imageUID);
-
-            try {
-                final File localFile = File.createTempFile("images", "jpg");
-                riversRef.getFile(localFile)
-                        .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                Bitmap image = BitmapFactory.decodeFile(
-                                        localFile.getAbsolutePath());
-                                imageEvent = image;
-                                imageReady = true;
-                                Log.w(TAG, "imageUID " + imageUID + " is ready");
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        Log.w("cliqus", "event image download failed");
-                    }
-                });
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+    public void setImageEvent(Bitmap imageEvent) {
+        this.imageEvent = imageEvent;
     }
 }
