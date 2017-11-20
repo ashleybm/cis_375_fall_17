@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +39,7 @@ public class EventFragment extends Fragment {
 
     private RecyclerView rv;
     private RecyclerAdapter adapter;
-
+    ItemTouchHelper touchHelper;
 
     private List<Event> events = new ArrayList<>();
     private List<String> preferences = new ArrayList<>();
@@ -75,6 +76,22 @@ public class EventFragment extends Fragment {
                 Log.w("Cliqus", "no null for days");
                 getUserPreferences();
             }
+
+            touchHelper = new ItemTouchHelper(new ItemTouchHelper
+                    .SimpleCallback(0,
+                        ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+                @Override
+                public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                    return false;
+                }
+
+                @Override
+                public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                    events.remove(viewHolder.getAdapterPosition());
+                    Log.w(TAG, "Swiped event " +viewHolder.getAdapterPosition());
+                    adapter.notifyItemRemoved(viewHolder.getAdapterPosition());
+                }
+            });
         }
     }
 
@@ -141,6 +158,7 @@ public class EventFragment extends Fragment {
     void setRecyclerAdapter() {
         adapter = new RecyclerAdapter(events);
         rv.setAdapter(adapter);
+        touchHelper.attachToRecyclerView(rv);
     }
 
     void checkIfImagesAreLoaded() {
@@ -169,6 +187,4 @@ public class EventFragment extends Fragment {
             Log.w(TAG, "displaying data");
         }
     }
-
-
 }
