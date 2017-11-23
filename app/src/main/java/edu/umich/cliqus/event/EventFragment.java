@@ -1,12 +1,10 @@
 package edu.umich.cliqus.event;
 
 import android.app.Fragment;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,12 +14,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,7 +33,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.umich.cliqus.NavBar.NavDrawerActivity;
 import edu.umich.cliqus.R;
 import edu.umich.cliqus.profile.Profile;
 
@@ -44,9 +40,9 @@ public class EventFragment extends Fragment {
 
     private TextView textView;
     private CardView cardView;
+    private ImageView imageView;
     private String assessment;
     private String details;
-    private int numOfRefreshes = 0;
 
     private RecyclerView rv;
     private RecyclerAdapter adapter;
@@ -54,6 +50,7 @@ public class EventFragment extends Fragment {
 
     private List<Event> events = new ArrayList<>();
     private List<String> preferences = new ArrayList<>();
+    private List<String> preferenceUID = new ArrayList<>();
     private Profile profile = null;
 
     private static final String ARG_SECTION_NUMBER = "position";
@@ -85,14 +82,14 @@ public class EventFragment extends Fragment {
                 Log.w("Cliqus", "null for days");
             } else {
                 Log.w("Cliqus", "no null for days");
-                getUserPreferences();
             }
 
             touchHelper = new ItemTouchHelper(new ItemTouchHelper
                     .SimpleCallback(0,
                         ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
                 @Override
-                public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
+                                      RecyclerView.ViewHolder target) {
                     return false;
                 }
 
@@ -113,74 +110,81 @@ public class EventFragment extends Fragment {
 
         Context context = getActivity();
         cardView = (CardView) rootView.findViewById(R.id.event_card_view);
+        imageView = (ImageView) rootView.findViewById(R.id.event_card_image);
+
         rv = (RecyclerView) rootView.findViewById(R.id.cardList);
 
-        populateEvents();
+        getUserPreferences();
+        populatePreferenceEvents();
         final LinearLayoutManager llm = new LinearLayoutManager(context);
         rv.setLayoutManager(llm);
 
         return rootView;
     }
 
-    public void populateEvents() {
+    public void populatePreferenceEvents() {
+        for(int i = 0; i < preferences.size(); i++) {
+            DatabaseReference ref = FirebaseDatabase.getInstance()
+                    .getReference()
+                    .child("tags")
+                    .child(preferences.get(i));
+
+            Log.w(TAG, "pulling preference event data for " + preferences.get(i));
+
+
+            ref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    for(DataSnapshot ds: dataSnapshot.getChildren()) {
+                        String uid = ds.getValue(String.class);
+                        if(!preferenceUID.contains(uid)) {
+                            preferenceUID.add(uid);
+                            populateEvent(uid);
+                            Log.w(TAG, "grabbed string for uid " + ds.getValue(String.class));
+                        } else
+                            Log.w(TAG, "duplicate uid " + ds.getValue(String.class) +
+                                    "ignoring");
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.w(TAG,"The pref event read failed: " + databaseError.getMessage());
+                }
+            });
+        }
+
+    }
+
+    public void populateEvent(final String uid) {
         DatabaseReference ref = FirebaseDatabase.getInstance()
                 .getReference()
-                .child("events");
+                .child("events")
+                .child(uid);
+
+        Log.w(TAG, "Populating uid: " + uid);
+
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.w(TAG, dataSnapshot.getValue().toString());
+                Log.w(TAG, "pulling event " + dataSnapshot.getValue());
 
-                for(int i = 0; i < preferences.size(); i++) {
-                    Log.w(TAG, "Fetching tag " + preferences.get(i));
-                    DataSnapshot ds = dataSnapshot
-                            .child(preferences.get(i));
-                    //grab everything belonging to tag
 
-                    for (DataSnapshot snapshot : ds.getChildren()) {
-                        events.add(snapshot.getValue(Event.class));
-                        Log.w(TAG, snapshot.getValue().toString());
+                Event singEvent = dataSnapshot.getValue(Event.class);
 
-                        StorageReference riversRef = FirebaseStorage.getInstance().getReference()
-                                .child("event_image")
-                                .child(events.get(events.size() - 1).getImageUID() + ".jpg");
-                        Log.w(TAG, "Fetching image " +
-                                events.get(events.size() - 1).getImageUID());
+                if(singEvent != null)
+                    fetchImage(singEvent);
+                else
+                    Log.w(TAG, "Event with uid " + uid + " was null");
 
-                        try {
-                            final int eventNum = events.size() - 1;
-                            final File localFile = File
-                                    .createTempFile("images", "jpg");
-                            riversRef.getFile(localFile)
-                                    .addOnSuccessListener(
-                                            new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                                        @Override
-                                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                            Bitmap image = BitmapFactory.decodeFile(
-                                                    localFile.getAbsolutePath());
-                                            events.get(eventNum).setImageEvent(image);
-                                            adapter.notifyItemChanged(eventNum);
-                                            Log.w(TAG, "imageUID " + eventNum + " is ready");
-                                        }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception exception) {
-                                    Log.w("cliqus", "event image" +
-                                            eventNum + " download failed");
-                                }
-                            });
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
                 setRecyclerAdapter();
             }
 
             @Override
             public void onCancelled(DatabaseError firebaseError) {
-                Log.w(TAG,"The read failed: " + firebaseError.getMessage());
+                Log.w(TAG, "The read failed: " + firebaseError.getMessage());
             }
         });
     }
@@ -196,7 +200,43 @@ public class EventFragment extends Fragment {
     void setRecyclerAdapter() {
         adapter = new RecyclerAdapter(events);
         rv.setAdapter(adapter);
+        rv.setHasFixedSize(true);
         touchHelper.attachToRecyclerView(rv);
+    }
+
+    void fetchImage(final Event event) {
+        StorageReference riversRef = FirebaseStorage.getInstance().getReference()
+                .child("event_image")
+                .child("thumb_" + event.getEventUID() + ".jpg");
+        Log.w(TAG, "Attempting to fetch thumb_" + event.getEventUID());
+        try {
+            final File localFile = File
+                    .createTempFile("thumb_", "jpg");
+            riversRef.getFile(localFile)
+                    .addOnSuccessListener(
+                            new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                    Bitmap image = BitmapFactory.decodeFile(
+                                            localFile.getAbsolutePath());
+                                    event.setImageEvent(image);
+                                    final int currEvent = events.size() - 1;
+                                    events.add(event);
+                                    //adapter.notifyItemChanged(events.size() - 1);
+                                    Log.w(TAG, "imageUID " + event.getEventUID() +
+                                            " is ready, notifying adapter");
+                                    adapter.notifyDataSetChanged();
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    Log.w("cliqus", "event image" +
+                            event.getEventUID() + " download failed");
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 

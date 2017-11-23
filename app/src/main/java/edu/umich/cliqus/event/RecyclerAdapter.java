@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -37,7 +38,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Log.w("cliqus", "position " + position + " " + events.get(position).getDate() + " " + events.get(position).getTime());
+        Log.w("cliqus", "position " + position + " " + events.get(position).getDate() +
+                " " + events.get(position).getTime());
 
         if(position < MAXEVENTS) {
             holder.descriptionView.setText(events.get(position).getDescription());
@@ -49,21 +51,23 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
             if (holder.imageView != null) {
                 holder.imageView.setImageBitmap(events.get(position).getImageEvent());
-                Log.w("cliqus", "Setting image ID " + events.get(position).getImageUID());
+                Log.w("cliqus", "Setting image ID " + events.get(position).getEventUID());
             }
         }
     }
+
 
     @Override
     public int getItemCount() {
         return events.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder{
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         protected TextView descriptionView;
         protected TextView dateTimeView;
         protected TextView locationView;
         protected ImageView imageView;
+        protected RelativeLayout individualCardView;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -71,13 +75,16 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             dateTimeView =  (TextView) itemView.findViewById(R.id.event_card_date_time);
             locationView =  (TextView) itemView.findViewById(R.id.event_card_location);
             imageView = (ImageView) itemView.findViewById(R.id.event_card_image);
+            individualCardView = (RelativeLayout) itemView.findViewById(R.id.event_card_sub_view);
 
         }
+
     }
 
     public void newResults() {
-        for(int i = 0; i < MAXEVENTS; i++)
+        for(int i = 0; i < MAXEVENTS; i++) {
             events.remove(0);
-        this.notifyDataSetChanged();
+            notifyItemRemoved(0);
+        }
     }
 }

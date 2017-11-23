@@ -1,23 +1,7 @@
 package edu.umich.cliqus.event;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.Image;
-import android.support.annotation.NonNull;
-import android.util.Log;
-import android.widget.ImageView;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-
-import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 
 /**
@@ -26,11 +10,13 @@ import java.io.Serializable;
 
 public class Event implements Serializable {
     private final String TAG = "cliqus";
+
+
     private String date;
     private String time;
     private String address;
     private String description;
-    private String imageUID;
+    private String eventUID;
     private Bitmap imageEvent;
     private boolean imageReady = false;
 
@@ -38,15 +24,16 @@ public class Event implements Serializable {
         date = null;
         time = null;
         address = null;
-        imageUID = null;
+        eventUID = null;
         imageEvent = null;
     }
 
-    public Event(String date, String time, String address, String imageUID) {
+    public Event(String date, String time, String address, String description, String eventUID) {
         this.date = date;
         this.time = time;
         this.address = address;
-        this.imageUID = imageUID;
+        this.description = description;
+        this.eventUID = eventUID;
     }
 
     public String getDate() {
@@ -73,19 +60,39 @@ public class Event implements Serializable {
         this.address = address;
     }
 
-    public String getDescription() { return description;}
+    public String getDescription() {
+        return description;
+    }
 
-    public void setDescription(String description) { this.description = description; }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public String getImageUID() { return imageUID; }
+    public String getEventUID() {
+        return eventUID;
+    }
 
-    public void setImageID(ImageView image) { this.imageUID = imageUID; }
+    public void setEventUID(String eventUID) {
+        this.eventUID = eventUID;
+    }
 
-    public Bitmap getImageEvent() { return imageEvent; }
-
-    public boolean isImageReady() { return imageReady; }
+    public Bitmap getImageEvent() {
+        return imageEvent;
+    }
 
     public void setImageEvent(Bitmap imageEvent) {
         this.imageEvent = imageEvent;
+        imageReady = true;
     }
+
+    public boolean isImageReady() {
+        return imageReady;
+    }
+
+    public void setImageReady(boolean imageReady) {
+        this.imageReady = imageReady;
+    }
+
+
+
 }
