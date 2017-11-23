@@ -1,5 +1,6 @@
 package edu.umich.cliqus.event;
 
+import android.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,9 +18,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     List<Event> events;
     private final int MAXEVENTS = 15;
+    private static RecyclerViewClickListener mListener;
 
-    public RecyclerAdapter(List<Event> events){
+    public RecyclerAdapter(List<Event> events, RecyclerViewClickListener mListener){
         this.events = events;
+        this.mListener = mListener;
     }
 
     @Override
@@ -62,7 +65,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         return events.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         protected TextView descriptionView;
         protected TextView dateTimeView;
         protected TextView locationView;
@@ -76,15 +79,23 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             locationView =  (TextView) itemView.findViewById(R.id.event_card_location);
             imageView = (ImageView) itemView.findViewById(R.id.event_card_image);
             individualCardView = (RelativeLayout) itemView.findViewById(R.id.event_card_sub_view);
-
+            individualCardView.setOnClickListener(this);
         }
-
+        @Override
+        public void onClick(View v) {
+            mListener.recyclerViewListClicked(v, getLayoutPosition());
+        }
     }
 
-    public void newResults() {
-        for(int i = 0; i < MAXEVENTS; i++) {
+    public void removeEvents() {
+        for(int i = 0; i < events.size() - 1; i++) {
             events.remove(0);
             notifyItemRemoved(0);
         }
     }
+
+    public interface RecyclerViewClickListener {
+        public void recyclerViewListClicked(View v, int position);
+    }
+
 }

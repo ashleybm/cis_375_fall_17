@@ -225,7 +225,7 @@ public class NavDrawerActivity extends AppCompatActivity
                     .replace(R.id.frame_container, fragment).commit();
         }
 
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_in_home);
+        //overridePendingTransition(R.animator.slide_in_right, R.animator.slide_in_home);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

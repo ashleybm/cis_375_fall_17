@@ -1,6 +1,9 @@
 package edu.umich.cliqus.event;
 
+import android.annotation.SuppressLint;
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -35,8 +38,9 @@ import java.util.List;
 
 import edu.umich.cliqus.R;
 import edu.umich.cliqus.profile.Profile;
+import edu.umich.cliqus.profile.ProfileFragment;
 
-public class EventFragment extends Fragment {
+public class EventFragment extends Fragment implements RecyclerAdapter.RecyclerViewClickListener {
 
     private TextView textView;
     private CardView cardView;
@@ -198,7 +202,7 @@ public class EventFragment extends Fragment {
     }
 
     void setRecyclerAdapter() {
-        adapter = new RecyclerAdapter(events);
+        adapter = new RecyclerAdapter(events, this);
         rv.setAdapter(adapter);
         rv.setHasFixedSize(true);
         touchHelper.attachToRecyclerView(rv);
@@ -239,5 +243,23 @@ public class EventFragment extends Fragment {
         }
     }
 
+    public void onEventClick(int position) {
+    }
+
+    @SuppressLint("ResourceType")
+    @Override
+    public void recyclerViewListClicked(View v, int position) {
+
+        Fragment fragment = new SingleEventFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("selected_event", events.get(position));
+        fragment.setArguments(bundle);
+
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction()
+        //        .setCustomAnimations(R.animator.slide_in_right, R.animator.slide_in_home, 0, 0)
+                .replace(R.id.frame_container, fragment).commit();
+    }
 
 }

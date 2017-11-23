@@ -45,5 +45,7 @@
     <string name="title_notifications">Notifications</string>
     <string name="past_events">Past Events</string>
     <string name="attending_upcoming_events">Attending Upcoming Events</string>
+    <string name="comments">Comments</string>
+    <string name="attending_this_event">Attendees</string>
 
 </resources>

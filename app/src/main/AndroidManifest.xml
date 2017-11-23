@@ -35,10 +35,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".profile.RequestProfileDataActivity" />
-        <activity android:name=".profile.ProfileActivity"
-
+        <activity android:name=".profile.ProfileActivity">
+<!--
             android:theme="@style/SlidingAnimationTheme">
-
+-->
         </activity>
     </application>
 
