@@ -242,6 +242,24 @@ public class LoginActivity extends AppCompatActivity
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.w(TAG, "NAME OF USER " + mAuth.getCurrentUser().getDisplayName());
+
+                            //FIXME MADE CHANGES HERE
+                            //Sign in success, email verification
+                            FirebaseAuth auth = FirebaseAuth.getInstance();
+                            FirebaseUser user = auth.getCurrentUser();
+
+                            if (user != null) {
+                                user.sendEmailVerification()
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    Log.d(TAG, "Email sent.");
+                                                }
+                                            }
+                                        });
+                            }
+
                             onSignupSuccess();
                         } else {
                             // If sign in fails, display a message to the user.
