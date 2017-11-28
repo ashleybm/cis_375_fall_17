@@ -40,6 +40,10 @@ import edu.umich.cliqus.R;
 import edu.umich.cliqus.profile.Profile;
 import edu.umich.cliqus.profile.ProfileFragment;
 
+/*
+    Created by ashleybm 12/3/2017
+ */
+
 public class EventFragment extends Fragment implements RecyclerAdapter.RecyclerViewClickListener {
 
     private TextView textView;
