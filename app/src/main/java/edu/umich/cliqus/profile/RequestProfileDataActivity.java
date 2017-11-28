@@ -131,7 +131,7 @@ public class RequestProfileDataActivity extends AppCompatActivity {
             myRef = mFirebaseDatabase.getReference();
 
             Profile profile = new Profile(firstName, lastName, gender, dob,
-                    user.getEmail(), phone, "");
+                    user.getEmail(), phone, "default");
 
             if(user != null) {
                 String userID = user.getUid();
