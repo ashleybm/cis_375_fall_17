@@ -243,7 +243,6 @@ public class LoginActivity extends AppCompatActivity
                             // Sign in success, update UI with the signed-in user's information
                             Log.w(TAG, "NAME OF USER " + mAuth.getCurrentUser().getDisplayName());
 
-                            //FIXME MADE CHANGES HERE
                             //Sign in success, email verification
                             FirebaseAuth auth = FirebaseAuth.getInstance();
                             FirebaseUser user = auth.getCurrentUser();
