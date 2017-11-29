@@ -34,15 +34,20 @@ import butterknife.BindView;
 import edu.umich.cliqus.R;
 
 public class LoginActivity extends AppCompatActivity
-        implements GoogleApiClient.OnConnectionFailedListener{
+        implements GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = "CliqUs";
     private static final int REQUEST_SIGNUP = 0;
 
-    @BindView(R.id.input_email) EditText _emailText;
-    @BindView(R.id.input_password) EditText _passwordText;
-    @BindView(R.id.btn_login) Button _loginButton;
-    @BindView(R.id.btn_signup) TextView _signupLink;
-    @BindView(R.id.google_sign_in_button) SignInButton _googleSignInButton;
+    @BindView(R.id.input_email)
+    EditText _emailText;
+    @BindView(R.id.input_password)
+    EditText _passwordText;
+    @BindView(R.id.btn_login)
+    Button _loginButton;
+    @BindView(R.id.btn_signup)
+    TextView _signupLink;
+    @BindView(R.id.google_sign_in_button)
+    SignInButton _googleSignInButton;
     private FirebaseAuth mAuth;
     private GoogleApiClient mGoogleApiClient;
     private static final int RC_SIGN_IN = 9001;
@@ -91,11 +96,12 @@ public class LoginActivity extends AppCompatActivity
         mAuth = FirebaseAuth.getInstance();
 
 
-        if(SaveSharedPreference.getUserName(LoginActivity.this).length() != 0) {
+        if (SaveSharedPreference.getUserName(LoginActivity.this).length() != 0) {
             onLoginSuccess();
         }
     }
-//
+
+    //
     public void login() {
         Log.d(TAG, "Login");
 
@@ -116,30 +122,30 @@ public class LoginActivity extends AppCompatActivity
         final String password = _passwordText.getText().toString();
 
         mAuth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    progressDialog.dismiss();
-                    if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d(TAG, "signInWithEmail:success");
-                        FirebaseUser user = mAuth.getCurrentUser();
-                        onLoginSuccess();
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        Log.w(TAG, "signInWithEmail:failure", task.getException());
-                        Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                Toast.LENGTH_SHORT).show();
-                        onLoginFailed();
-                    }
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        progressDialog.dismiss();
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            onLoginSuccess();
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithEmail:failure", task.getException());
+                            Toast.makeText(LoginActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                            onLoginFailed();
+                        }
 
-                    // [START_EXCLUDE]
-                    if (!task.isSuccessful()) {
-                        onLoginFailed();
+                        // [START_EXCLUDE]
+                        if (!task.isSuccessful()) {
+                            onLoginFailed();
+                        }
+                        // [END_EXCLUDE]
                     }
-                    // [END_EXCLUDE]
-                }
-        });
+                });
     }
 
     public void loginWithGoogle() {
@@ -171,8 +177,8 @@ public class LoginActivity extends AppCompatActivity
             mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
-                    if(task.isSuccessful()) {
-                        Log.w(TAG, "Google Sign In succesful");
+                    if (task.isSuccessful()) {
+                        Log.w(TAG, "Google Sign In successful");
                         FirebaseUser user = mAuth.getCurrentUser();
                         onLoginSuccess();
 
@@ -241,7 +247,25 @@ public class LoginActivity extends AppCompatActivity
 
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Log.w(TAG, "NAME OF USER " + mAuth.getCurrentUser().getDisplayName());
+                            Log.w(TAG, "NAME OF USER " +
+                                    mAuth.getCurrentUser().getDisplayName());
+
+                            //Sign in success, email verification
+                            FirebaseAuth auth = FirebaseAuth.getInstance();
+                            FirebaseUser user = auth.getCurrentUser();
+
+                            if (user != null) {
+                                user.sendEmailVerification()
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    Log.d(TAG, "Email sent.");
+                                                }
+                                            }
+                                        });
+                            }
+
                             onSignupSuccess();
                         } else {
                             // If sign in fails, display a message to the user.
@@ -273,7 +297,6 @@ public class LoginActivity extends AppCompatActivity
 
         setResult(RESULT_CANCELED, null);
     }
-
 
 
     public boolean validate() {
