@@ -1,6 +1,9 @@
 package edu.umich.cliqus.profile;
 
+import android.app.DialogFragment;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.renderscript.BaseObj;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,6 +25,8 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import edu.umich.cliqus.DatePickerFragment;
+import edu.umich.cliqus.NavBar.NavDrawerActivity;
 import edu.umich.cliqus.R;
 import edu.umich.cliqus.UserInformation;
 
@@ -32,8 +37,9 @@ public class RequestProfileDataActivity extends AppCompatActivity {
     EditText _firstNameText;
     @BindView(R.id.input_last_name) EditText _lastNameText;
     @BindView(R.id.input_gender) EditText _genderText;
-    /// @BindView(R.id.input_dob) EditText _dobtext;
     @BindView(R.id.btn_save_profile) Button _saveDataButton;
+    @BindView(R.id.dob_button) Button _dateOfBirthButton;
+    @BindView(R.id.input_phone) EditText _phoneNumber;
 
     private FirebaseAuth mAuth;
 
@@ -50,6 +56,13 @@ public class RequestProfileDataActivity extends AppCompatActivity {
         setContentView(R.layout.activity_request_profile_data);
         ButterKnife.bind(this);
 
+        _dateOfBirthButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment newFragment = new DatePickerFragment();
+                newFragment.show(getFragmentManager(), "DatePicker");
+            }
+        });
         _saveDataButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -66,6 +79,8 @@ public class RequestProfileDataActivity extends AppCompatActivity {
         firstName = _firstNameText.getText().toString();
         lastName = _lastNameText.getText().toString();
         gender = _genderText.getText().toString();
+        dob = _dateOfBirthButton.getText().toString();
+        phone = _phoneNumber.getText().toString();
 
         if (firstName.isEmpty() || firstName.length() < 3) {
             _firstNameText.setError("at least 3 characters");
@@ -81,13 +96,27 @@ public class RequestProfileDataActivity extends AppCompatActivity {
             _lastNameText.setError(null);
         }
 
-        if (lastName.isEmpty()) {
+        if (gender.isEmpty()) {
             _genderText.setError("enter your gender");
             valid = false;
         } else {
             _genderText.setError(null);
         }
 
+        if (dob.isEmpty()) {
+            _dateOfBirthButton.setError("enter your gender");
+            valid = false;
+        } else {
+            _dateOfBirthButton.setError(null);
+        }
+
+        if(phone.isEmpty()) {
+            _phoneNumber.setError("enter your phone number");
+            valid = false;
+        }
+        else {
+            _phoneNumber.setError(null);
+        }
         return valid;
     }
 
@@ -101,13 +130,11 @@ public class RequestProfileDataActivity extends AppCompatActivity {
             FirebaseAuth.AuthStateListener mAuthListener;
             myRef = mFirebaseDatabase.getReference();
 
-            Profile profile = new Profile(firstName, lastName, gender, " ",
-                    user.getEmail(), " ", "");
+            Profile profile = new Profile(firstName, lastName, gender, dob,
+                    user.getEmail(), phone, "");
 
             if(user != null) {
                 String userID = user.getUid();
-
-                //signUp();   //attempt to sign up if first time user.
 
                 Log.w("CliqUs", firstName);
                 Log.w("CliqUs", lastName);
@@ -116,8 +143,12 @@ public class RequestProfileDataActivity extends AppCompatActivity {
                 this.finish();
             } else
                 Log.w(TAG, "Contact support");
+
+            Intent intent = new Intent(RequestProfileDataActivity.this, NavDrawerActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("profile", profile);
+            startActivity(intent, bundle);
+            finish();
         }
     }
-
-
 }

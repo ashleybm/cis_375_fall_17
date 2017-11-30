@@ -141,14 +141,16 @@ public class EventFragment extends Fragment implements RecyclerAdapter.RecyclerV
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
                     for(DataSnapshot ds: dataSnapshot.getChildren()) {
-                        String uid = ds.getValue(String.class);
-                        if(!preferenceUID.contains(uid)) {
-                            preferenceUID.add(uid);
-                            populateEvent(uid);
-                            Log.w(TAG, "grabbed string for uid " + ds.getValue(String.class));
-                        } else
-                            Log.w(TAG, "duplicate uid " + ds.getValue(String.class) +
-                                    "ignoring");
+                        if (ds.getValue(String.class) != null) {
+                            String uid = ds.getValue(String.class);
+                            if (!preferenceUID.contains(uid)) {
+                                preferenceUID.add(uid);
+                                populateEvent(uid);
+                                Log.w(TAG, "grabbed string for uid " + ds.getValue(String.class));
+                            } else
+                                Log.w(TAG, "duplicate uid " + ds.getValue(String.class) +
+                                        "ignoring");
+                        }
                     }
                 }
 

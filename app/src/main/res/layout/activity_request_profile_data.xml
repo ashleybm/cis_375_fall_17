@@ -21,48 +21,72 @@
 
         <!--  Name Labels -->
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:id="@+id/topRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="1"
+            android:orientation="horizontal">
 
 
             <EditText android:id="@+id/input_first_name"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="25dp"
                 android:inputType="textCapWords"
-                android:hint="First Name" />
+                android:layout_weight=".5"
+                android:hint="First Name"
+                android:padding="10dp"
+                android:ellipsize="end"/>
 
-            <EditText android:id="@+id/input_last_name"
-                android:layout_width="match_parent"
+            <EditText
+                android:id="@+id/input_last_name"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="25dp"
+                android:layout_weight=".5"
+                android:ellipsize="end"
+                android:hint="Last Name"
                 android:inputType="textCapWords"
-                android:hint="Last Name" />
-
+                android:padding="10dp"
+                android:paddingLeft="5dp" />
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/input_first_name"
+            android:weightSum="1"
             android:orientation="horizontal">
 
             <Button
-                android:layout_width="wrap_content"
+                android:id="@+id/dob_button"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="15dp"
                 android:background="@color/colorPrimary"
-                android:text="@string/pick_time"
-                android:onClick="showTimePickerDialog"
-                android:paddingRight="15dp"/>
+                android:textDirection="ltr"
+                android:layout_weight=".5"
+                android:gravity="left|center_horizontal"
+                android:padding="10dp"
+                android:typeface="normal"
+                style="?android:attr/borderlessButtonStyle"
+                android:text="@string/pick_time" />
 
-            <EditText android:id="@+id/input_gender"
-                android:layout_width="match_parent"
+            <EditText
+                android:id="@+id/input_gender"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:inputType="text"
-                android:hint="Gender" />
-
+                android:layout_weight=".5"
+                android:padding="10dp"
+                android:hint="Gender"
+                android:paddingLeft="15dp"
+                android:inputType="text" />
 
         </LinearLayout>
+
+        <EditText
+            android:id="@+id/input_phone"
+            android:hint="@string/phone_number"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:inputType="phone" />
 
         <!-- Signup Button -->
         <android.support.v7.widget.AppCompatButton

@@ -114,14 +114,40 @@ public class Profile implements Serializable{
     }
 
 
-    public void addDesiredEventTag(String tag) {
+    public void addDesiredEvenasdtTag(String tag) {
         desiredEventTags += tag + ",";
     }
 
     public boolean checkData() {
-        if(firstName.isEmpty() || lastName.isEmpty() || gender.isEmpty() || dob.isEmpty() ||
-                email.isEmpty() || phone.isEmpty())
+        if(firstName.isEmpty()) {
+            Log.w("cliqus", "First name is empty");
             return false;
+        }
+        else if(lastName.isEmpty()) {
+            Log.w("cliqus", "Last name is empty");
+            return false;
+        }
+
+        else if(gender.isEmpty())  {
+            Log.w("cliqus", "Gender is empty");
+            return false;
+        }
+
+        else if(dob.isEmpty()) {
+            Log.w("cliqus", "DOB is empty");
+            return false;
+        }
+
+        else if(email.isEmpty()) {
+            Log.w("cliqus", "Email is empty");
+            return false;
+        }
+
+        else if(phone.isEmpty()) {
+            Log.w("cliqus", "phone # is empty");
+            return false;
+        }
+
         return true;
     }
 

@@ -62,6 +62,14 @@ public class NavDrawerActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        if (savedInstanceState == null) {
+            Fragment fragment = new ProfileFragment();
+
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("profiledata", profile);
+            fragment.setArguments(bundle);
+        }
+
     }
 
     @Override
@@ -84,16 +92,17 @@ public class NavDrawerActivity extends AppCompatActivity
             Log.w(TAG, "USER ID " + uid);
 
 
-            userRef.child("users").child(uid).addValueEventListener(new ValueEventListener() {
+            userRef.child("users").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     profile = dataSnapshot.getValue(Profile.class);
 
                     Log.w(TAG, "Data pulled!");
-                    if(profile == null) {
+                    if(profile == null || !profile.checkData()) {
                         Intent intent = new Intent(NavDrawerActivity.this,
                                 RequestProfileDataActivity.class);
                         startActivity(intent);
+
                     } else {
                         Log.w("CliqUs", profile.getFirstName());
                         Log.w("CliqUs", profile.getLastName());
@@ -101,18 +110,18 @@ public class NavDrawerActivity extends AppCompatActivity
                         Log.w("CliqUs", profile.getEmail());
                         Log.w("CliqUs", profile.getDob());
                         Log.w("CliqUs", profile.getPhone());
+
+                        Fragment fragment = new ProfileFragment();
+
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("profiledata", profile);
+                        fragment.setArguments(bundle);
+
+                        FragmentManager fragmentManager = getFragmentManager();
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.frame_container, fragment).commit();
+
                     }
-
-                    Fragment fragment = new ProfileFragment();
-
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("profiledata", profile);
-                    fragment.setArguments(bundle);
-
-                    FragmentManager fragmentManager = getFragmentManager();
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.frame_container, fragment).commit();
-
                 }
 
                 @Override
@@ -164,8 +173,6 @@ public class NavDrawerActivity extends AppCompatActivity
         Fragment fragment = null;
 
         if (id == R.id.nav_profile) {
-            //Intent intent = new Intent(NavDrawerActivity.this, ProfileActivity.class);
-           // startActivity(intent);
             fragment = new ProfileFragment();
 
             Bundle bundle = new Bundle();
@@ -218,12 +225,11 @@ public class NavDrawerActivity extends AppCompatActivity
             mAuth.signOut();
             startActivity(intent);
         }
-
-        if(fragment != null) {
+         if(fragment != null) {
             FragmentManager fragmentManager = getFragmentManager();
             fragmentManager.beginTransaction()
                     .replace(R.id.frame_container, fragment).commit();
-        }
+         }
 
         //overridePendingTransition(R.animator.slide_in_right, R.animator.slide_in_home);
 
