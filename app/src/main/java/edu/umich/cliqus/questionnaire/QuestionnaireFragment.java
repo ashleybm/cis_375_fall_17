@@ -1,14 +1,15 @@
 package edu.umich.cliqus.questionnaire;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import edu.umich.cliqus.R;
+import edu.umich.cliqus.profile.Profile;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -21,12 +22,9 @@ import edu.umich.cliqus.R;
 public class QuestionnaireFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String PROFILEDATA = "profiledata";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private Profile profile;
 
     private OnFragmentInteractionListener mListener;
 
@@ -43,11 +41,10 @@ public class QuestionnaireFragment extends Fragment {
      * @return A new instance of fragment QuestionnaireFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static QuestionnaireFragment newInstance(String param1, String param2) {
+    public static QuestionnaireFragment newInstance(Profile profile) {
         QuestionnaireFragment fragment = new QuestionnaireFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putSerializable(PROFILEDATA, profile);
         fragment.setArguments(args);
         return fragment;
     }
@@ -57,7 +54,7 @@ public class QuestionnaireFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-
+            profile = (Profile) getArguments().getSerializable(PROFILEDATA);
         }
     }
 
@@ -72,17 +69,6 @@ public class QuestionnaireFragment extends Fragment {
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
         }
     }
 

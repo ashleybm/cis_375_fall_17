@@ -31,6 +31,7 @@ import edu.umich.cliqus.event.EventFragment;
 import edu.umich.cliqus.profile.Profile;
 import edu.umich.cliqus.profile.ProfileFragment;
 import edu.umich.cliqus.profile.RequestProfileDataActivity;
+import edu.umich.cliqus.questionnaire.QuestionnaireFragment;
 
 public class NavDrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -172,22 +173,16 @@ public class NavDrawerActivity extends AppCompatActivity
         int id = item.getItemId();
         Fragment fragment = null;
 
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("profiledata", profile);
+
         if (id == R.id.nav_profile) {
             fragment = new ProfileFragment();
-
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("profiledata", profile);
-            fragment.setArguments(bundle);
-
         } else if (id == R.id.nav_events) {
             fragment = new EventFragment();
-
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("profiledata", profile);
-            fragment.setArguments(bundle);
-
         } else if (id == R.id.nav_questionnaire) {
-
+            fragment = new QuestionnaireFragment();
         } else if (id == R.id.nav_settings) {
 
         } else if (id == R.id.nav_submit_event) {
@@ -226,6 +221,7 @@ public class NavDrawerActivity extends AppCompatActivity
             startActivity(intent);
         }
          if(fragment != null) {
+            fragment.setArguments(bundle);
             FragmentManager fragmentManager = getFragmentManager();
             fragmentManager.beginTransaction()
                     .replace(R.id.frame_container, fragment).commit();

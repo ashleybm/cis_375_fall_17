@@ -114,7 +114,7 @@ public class Profile implements Serializable{
     }
 
 
-    public void addDesiredEvenasdtTag(String tag) {
+    public void addDesiredEventTag(String tag) {
         desiredEventTags += tag + ",";
     }
 

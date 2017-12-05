@@ -2,43 +2,54 @@ package edu.umich.cliqus.questionnaire;
 
 import java.util.ArrayList;
 
-/**
- * Created by Ashley Baker on 12/4/2017.
- */
-
 public class Question {
     private final String TAG = "cliqus";
 
-    private String mainTag;
-    private ArrayList<String> tagList;
-    private String tagUID;
+    private String questionStr;
+    private String questionAnsChoices;
+    private String questionUID;
+    private ArrayList questionAnsChoicesList;
 
     public Question(){
-        mainTag = null;
-        tagList.clear();
-        tagUID = null;
+        questionStr = null;
+        questionAnsChoices = null;
+        questionAnsChoicesList = null;
+        questionUID = null;
     }
 
-    public Question(String tag, String uid, ArrayList<String> list){
-        this.mainTag = tag;
-        this.tagUID = uid;
-        this.tagList = list;
+    public Question(String questionStr, String questionUID, ArrayList<String> questionAnsChoicesList){
+        this.questionStr = questionStr;
+        this.questionUID = questionUID;
+        this.questionAnsChoicesList = questionAnsChoicesList;
+        breakDownList();
     }
 
-    public String getMainTag(){ return mainTag; }
+    public String getQuestionStr(){ return questionStr; }
 
-    public void setMainTag(String tag){ this.mainTag = tag; }
+    public void setQuestionStr(String tag){ this.questionStr = tag; }
 
-    public String getTagUID(){ return tagUID; }
+    public String getQuestionUID(){ return questionUID; }
 
-    public void setTagUID(String uid){this.tagUID = uid; }
+    public void setQuestionUID(String uid){this.questionUID = uid; }
 
-    public ArrayList<String> getTagList() { return tagList; }
+    public ArrayList<String> getQuestionAnsChoicesList() { return questionAnsChoicesList; }
 
-    public void setTagList(ArrayList<String> tagList){ this.tagList = tagList; }
+    public void setQuestionAnsChoicesList(ArrayList<String> tagList){
+        this.questionAnsChoicesList = questionAnsChoicesList;
+    }
 
-    public void addTagToList(String newTag){ this.tagList.add(newTag);}
+    public void addTagToList(String newTag){ this.questionAnsChoicesList.add(newTag);}
 
+    public void breakDownList() {
+        String quesAns = questionAnsChoices;
+        while(!quesAns.isEmpty()) {
+            questionAnsChoicesList.add(
+                quesAns.substring(quesAns.indexOf('{') + 1, quesAns.indexOf('}') - 1));
+            quesAns.replace(
+                "{" + questionAnsChoicesList.get(questionAnsChoicesList.size()).toString() +"}",
+                "");
+        }
+    }
 
 }
 
