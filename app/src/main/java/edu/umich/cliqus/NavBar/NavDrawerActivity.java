@@ -15,7 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -31,7 +31,7 @@ import edu.umich.cliqus.event.EventFragment;
 import edu.umich.cliqus.profile.Profile;
 import edu.umich.cliqus.profile.ProfileFragment;
 import edu.umich.cliqus.profile.RequestProfileDataActivity;
-import edu.umich.cliqus.questionnaire.QuestionnaireFragment;
+import edu.umich.cliqus.questionnaire.QuestionFragment;
 
 public class NavDrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -182,9 +182,12 @@ public class NavDrawerActivity extends AppCompatActivity
         } else if (id == R.id.nav_events) {
             fragment = new EventFragment();
         } else if (id == R.id.nav_questionnaire) {
-            fragment = new QuestionnaireFragment();
+            Toast.makeText(this, "This feature has not been implemented yet!",
+                    Toast.LENGTH_LONG).show();
+            //            fragment = new QuestionFragment();
         } else if (id == R.id.nav_settings) {
-
+            Toast.makeText(this, "This feature has not been implemented yet!",
+                    Toast.LENGTH_LONG).show();
         } else if (id == R.id.nav_submit_event) {
 
             try{

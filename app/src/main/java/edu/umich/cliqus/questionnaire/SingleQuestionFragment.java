@@ -33,7 +33,7 @@ public class SingleQuestionFragment extends Fragment {
     }
 
 
-    public static SingleQuestionFragment newInstance(Questionnaire que) {
+    public static SingleQuestionFragment newInstance() {
         SingleQuestionFragment fragment = new SingleQuestionFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);

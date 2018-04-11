@@ -1,8 +1,11 @@
 package edu.umich.cliqus.questionnaire;
 
+import android.util.Log;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Question {
+public class Question implements Serializable {
     private final String TAG = "cliqus";
 
     private String questionStr;
@@ -17,7 +20,7 @@ public class Question {
         questionUID = null;
     }
 
-    public Question(String questionStr, String questionUID, ArrayList<String> questionAnsChoicesList){
+    public Question(String questionStr, String questionUID, String questionAnsChoices){
         this.questionStr = questionStr;
         this.questionUID = questionUID;
         this.questionAnsChoicesList = questionAnsChoicesList;
@@ -32,6 +35,12 @@ public class Question {
 
     public void setQuestionUID(String uid){this.questionUID = uid; }
 
+    public String getQuestionAnsChoices() { return questionAnsChoices; }
+
+    public void setQuestionAnsChoices( String questionAnsChoices) {
+        this.questionAnsChoices = questionAnsChoices;
+    }
+
     public ArrayList<String> getQuestionAnsChoicesList() { return questionAnsChoicesList; }
 
     public void setQuestionAnsChoicesList(ArrayList<String> tagList){
@@ -42,13 +51,14 @@ public class Question {
 
     public void breakDownList() {
         String quesAns = questionAnsChoices;
-        while(!quesAns.isEmpty()) {
-            questionAnsChoicesList.add(
-                quesAns.substring(quesAns.indexOf('{') + 1, quesAns.indexOf('}') - 1));
-            quesAns.replace(
-                "{" + questionAnsChoicesList.get(questionAnsChoicesList.size()).toString() +"}",
-                "");
-        }
+        if(quesAns != null)
+            while(!quesAns.isEmpty()) {
+                questionAnsChoicesList.add(
+                    quesAns.substring(quesAns.indexOf('{') + 1, quesAns.indexOf('}') - 1));
+                quesAns.replace(
+                    "{" + questionAnsChoicesList.get(questionAnsChoicesList.size()).toString() +"}",
+                    "");
+            }
     }
 
 }
