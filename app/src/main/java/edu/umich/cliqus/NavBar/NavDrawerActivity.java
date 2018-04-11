@@ -15,7 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -31,6 +31,7 @@ import edu.umich.cliqus.event.EventFragment;
 import edu.umich.cliqus.profile.Profile;
 import edu.umich.cliqus.profile.ProfileFragment;
 import edu.umich.cliqus.profile.RequestProfileDataActivity;
+import edu.umich.cliqus.questionnaire.QuestionFragment;
 
 public class NavDrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -62,6 +63,14 @@ public class NavDrawerActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        if (savedInstanceState == null) {
+            Fragment fragment = new ProfileFragment();
+
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("profiledata", profile);
+            fragment.setArguments(bundle);
+        }
+
     }
 
     @Override
@@ -84,16 +93,17 @@ public class NavDrawerActivity extends AppCompatActivity
             Log.w(TAG, "USER ID " + uid);
 
 
-            userRef.child("users").child(uid).addValueEventListener(new ValueEventListener() {
+            userRef.child("users").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     profile = dataSnapshot.getValue(Profile.class);
 
                     Log.w(TAG, "Data pulled!");
-                    if(profile == null) {
+                    if(profile == null || !profile.checkData()) {
                         Intent intent = new Intent(NavDrawerActivity.this,
                                 RequestProfileDataActivity.class);
                         startActivity(intent);
+
                     } else {
                         Log.w("CliqUs", profile.getFirstName());
                         Log.w("CliqUs", profile.getLastName());
@@ -101,18 +111,18 @@ public class NavDrawerActivity extends AppCompatActivity
                         Log.w("CliqUs", profile.getEmail());
                         Log.w("CliqUs", profile.getDob());
                         Log.w("CliqUs", profile.getPhone());
+
+                        Fragment fragment = new ProfileFragment();
+
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("profiledata", profile);
+                        fragment.setArguments(bundle);
+
+                        FragmentManager fragmentManager = getFragmentManager();
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.frame_container, fragment).commit();
+
                     }
-
-                    Fragment fragment = new ProfileFragment();
-
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("profiledata", profile);
-                    fragment.setArguments(bundle);
-
-                    FragmentManager fragmentManager = getFragmentManager();
-                    fragmentManager.beginTransaction()
-                            .replace(R.id.frame_container, fragment).commit();
-
                 }
 
                 @Override
@@ -163,26 +173,21 @@ public class NavDrawerActivity extends AppCompatActivity
         int id = item.getItemId();
         Fragment fragment = null;
 
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("profiledata", profile);
+
         if (id == R.id.nav_profile) {
-            //Intent intent = new Intent(NavDrawerActivity.this, ProfileActivity.class);
-           // startActivity(intent);
             fragment = new ProfileFragment();
-
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("profiledata", profile);
-            fragment.setArguments(bundle);
-
         } else if (id == R.id.nav_events) {
             fragment = new EventFragment();
-
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("profiledata", profile);
-            fragment.setArguments(bundle);
-
         } else if (id == R.id.nav_questionnaire) {
-
+            Toast.makeText(this, "This feature has not been implemented yet!",
+                    Toast.LENGTH_LONG).show();
+            //            fragment = new QuestionFragment();
         } else if (id == R.id.nav_settings) {
-
+            Toast.makeText(this, "This feature has not been implemented yet!",
+                    Toast.LENGTH_LONG).show();
         } else if (id == R.id.nav_submit_event) {
 
             try{
@@ -218,12 +223,12 @@ public class NavDrawerActivity extends AppCompatActivity
             mAuth.signOut();
             startActivity(intent);
         }
-
-        if(fragment != null) {
+         if(fragment != null) {
+            fragment.setArguments(bundle);
             FragmentManager fragmentManager = getFragmentManager();
             fragmentManager.beginTransaction()
                     .replace(R.id.frame_container, fragment).commit();
-        }
+         }
 
         //overridePendingTransition(R.animator.slide_in_right, R.animator.slide_in_home);
 
